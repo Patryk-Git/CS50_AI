@@ -77,10 +77,8 @@ def main():
         degrees = len(path)
         print(f"{degrees} degrees of separation.")
         path = [(None, source)] + path
-        print(path)
         for i in range(degrees):
             person1 = people[path[i][1]]["name"]
-            print(path)
             person2 = people[path[i + 1][1]]["name"]
             movie = movies[path[i + 1][0]]["title"]
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
@@ -95,6 +93,7 @@ def shortest_path(source, target):
     """
 
     num_explored = 0
+
     start = Node(state=source, parent=None, action=None)
     frontier = StackFrontier()
     frontier.add(start)
@@ -104,26 +103,24 @@ def shortest_path(source, target):
     while True:
 
         if frontier.empty():
-            return Exception("no solution")
+            return None
+
         node = frontier.remove()
         num_explored += 1
-
-        if node.state == target:
-
-            solution = []
-
-            while node.parent is not None:
-                solution.append((node.action, node.state))
-                node = node.parent
-
-            solution.reverse()
-
-            return solution
 
         explored.add(node.state)
         for action, state in neighbors_for_person(node.state):
             if not frontier.contains_state(state) and state not in explored:
                 child = Node(state=state, parent=node, action=action)
+                if child.state == target:
+                    solution = []
+                    node = child
+                    while node.parent is not None:
+                        solution.append((node.action, node.state))
+                        node = node.parent
+
+                    solution.reverse()
+                    return solution
                 frontier.add(child)
 
 
